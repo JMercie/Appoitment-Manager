@@ -10,6 +10,8 @@ import (
 	"github.com/rs/cors"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+
+	_ "github.com/lib/pq"
 )
 
 type Empleado struct {
@@ -43,10 +45,6 @@ type Cliente struct {
 
 	Telefono int
 
-	Fecha string
-
-	Hora string
-
 	Turnos []Turnos
 }
 
@@ -77,7 +75,7 @@ var err error
 func main() {
 	router := mux.NewRouter()
 
-	db, err = gorm.Open("postgres", "host=db port=5432 user=jmercie dbname=ImperioGold sslmode=disable password=solvay1017")
+	db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=imperiogold sslmode=disable password=postgres")
 
 	if err != nil {
 		panic("failed to connect do db")
