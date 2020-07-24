@@ -4,68 +4,59 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/rs/cors"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-
-	_ "github.com/lib/pq"
 )
 
-type Empleado struct {
-	gorm.Model
-
-	_Id int
+type empleado struct {
+	ID int
 
 	Nombre string
 
-	Turnos []Turnos
+	Turnos []turnos
 }
 
-type Servicio struct {
-	gorm.Model
-
-	_Id int
+type servicio struct {
+	ID int
 
 	Nombre string
 
 	Precio int
 
-	Turnos []Turnos
+	Turnos []turnos
 }
 
-type Cliente struct {
-	gorm.Model
-
-	_Id int
+type cliente struct {
+	ID int
 
 	Nombre string
 
 	Telefono int
 
-	Turnos []Turnos
+	Turnos []turnos
 }
 
-type Turnos struct {
-	gorm.Model
+type turnos struct {
+	ID int
 
-	_Id int
+	Fecha *time.Time
 
-	Fecha string
-
-	hora string
+	hora *time.Time
 
 	Precio int
 
 	Asistio bool
 
-	Servicio_id []Servicio
+	ServicioID []servicio
 
-	Empleado_id []Empleado
+	EmpleadoID []empleado
 
-	Cliente_id []Cliente
+	ClienteID []cliente
 }
 
 var db *gorm.DB
@@ -83,13 +74,13 @@ func main() {
 
 	defer db.Close()
 
-	router.HandleFunc("/empleado/{id}", GetEmpleados).Methods("GET")
+	router.HandleFunc("/empleado", GetEmpleados).Methods("GET")
 
-	router.HandleFunc("/cliente/{id}", GetClientes).Methods("GET")
+	router.HandleFunc("/cliente", GetClientes).Methods("GET")
 
-	router.HandleFunc("/servicio/{id}", GetServicios).Methods("GET")
+	router.HandleFunc("/servicio", GetServicios).Methods("GET")
 
-	router.HandleFunc("/turnos/{id}", GetTurnos).Methods("GET")
+	router.HandleFunc("/turnos", GetTurnos).Methods("GET")
 
 	handler := cors.Default().Handler(router)
 
@@ -98,61 +89,37 @@ func main() {
 
 func GetEmpleados(w http.ResponseWriter, r *http.Request) {
 
-	params := mux.Vars(r)
+	var empleado []empleado
 
-	var empleado Empleado
-
-	db.First(&empleado, params["id"])
+	db.Table("empleado").Find(&empleado)
 
 	json.NewEncoder(w).Encode(&empleado)
-
 }
 
 func GetClientes(w http.ResponseWriter, r *http.Request) {
 
-	params := mux.Vars(r)
+	var clientes []cliente
 
-	var cliente Cliente
+	db.Table("cliente").Find(&clientes)
 
-	db.First(&cliente, params["id"])
-
-	json.NewEncoder(w).Encode(&cliente)
-
+	json.NewEncoder(w).Encode(&clientes)
 }
 
 func GetServicios(w http.ResponseWriter, r *http.Request) {
 
-	params := mux.Vars(r)
+	var servicios []servicio
 
-	var servicio Servicio
+	db.Table("servicio").Find(&servicios)
 
-	db.First(&servicio, params["id"])
+	json.NewEncoder(w).Encode(&servicios)
 
-	json.NewEncoder(w).Encode(&servicio)
 }
 
 func GetTurnos(w http.ResponseWriter, r *http.Request) {
 
-	params := mux.Vars(r)
+	var turnos []turnos
 
-	var turnos Turnos
-
-	var empleado []Empleado
-	var cliente []Cliente
-	var servicio []Servicio
-
-	db.First(&empleado, params["id"])
-	db.First(&cliente, params["id"])
-	db.First(&servicio, params["id"])
-
-	db.Model(&empleado).Related(&empleado)
-	db.Model(&cliente).Related(&cliente)
-	db.Model(&servicio).Related(&servicio)
-
-	turnos.Empleado_id = empleado
-	turnos.Servicio_id = servicio
-	turnos.Cliente_id = cliente
+	db.Find(&turnos)
 
 	json.NewEncoder(w).Encode(&turnos)
-
 }
