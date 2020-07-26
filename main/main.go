@@ -1,125 +1,50 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
-	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/middleware"
 	"github.com/jinzhu/gorm"
-	"github.com/rs/cors"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+
+	"github.com/JMercie/appointment-manager/database"
+	"github.com/JMercie/appointment-manager/tables"
 )
 
-type empleado struct {
-	ID int
+func initDatabase() {
 
-	Nombre string
+	var err error
 
-	Turnos []turnos
+	database.DBConn, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=imperiogold sslmode=disable password=postgres")
+	if err != nil {
+		panic("failed to connect database")
+	}
+	log.Println("Connection Opened to Database")
 }
 
-type servicio struct {
-	ID int
+func setupRoutes(app *fiber.App) {
+	app.Get("/empleado", tables.GetEmpleados)
 
-	Nombre string
+	app.Get("/cliente", tables.GetClientes)
 
-	Precio int
+	app.Get("/servicio", tables.GetServicios)
 
-	Turnos []turnos
+	app.Get("/turnos", tables.GetTurnos)
+
+	app.Get("/turnosyempleado/", tables.GetTurnoConEmpleadoYCliente)
 }
-
-type cliente struct {
-	ID int
-
-	Nombre string
-
-	Telefono int
-
-	Turnos []turnos
-}
-
-type turnos struct {
-	ID int
-
-	Fecha *time.Time
-
-	hora *time.Time
-
-	Precio int
-
-	Asistio bool
-
-	ServicioID []servicio
-
-	EmpleadoID []empleado
-
-	ClienteID []cliente
-}
-
-var db *gorm.DB
-
-var err error
 
 func main() {
-	router := mux.NewRouter()
+	app := fiber.New()
 
-	db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=imperiogold sslmode=disable password=postgres")
+	initDatabase()
+	app.Use(middleware.Recover())
+	setupRoutes(app)
+	app.Listen(3000)
 
-	if err != nil {
-		panic("failed to connect do db")
-	}
+	log.Fatal(app.Listen(3000))
 
-	defer db.Close()
-
-	router.HandleFunc("/empleado", GetEmpleados).Methods("GET")
-
-	router.HandleFunc("/cliente", GetClientes).Methods("GET")
-
-	router.HandleFunc("/servicio", GetServicios).Methods("GET")
-
-	router.HandleFunc("/turnos", GetTurnos).Methods("GET")
-
-	handler := cors.Default().Handler(router)
-
-	log.Fatal(http.ListenAndServe(":8080", handler))
-}
-
-func GetEmpleados(w http.ResponseWriter, r *http.Request) {
-
-	var empleado []empleado
-
-	db.Table("empleado").Find(&empleado)
-
-	json.NewEncoder(w).Encode(&empleado)
-}
-
-func GetClientes(w http.ResponseWriter, r *http.Request) {
-
-	var clientes []cliente
-
-	db.Table("cliente").Find(&clientes)
-
-	json.NewEncoder(w).Encode(&clientes)
-}
-
-func GetServicios(w http.ResponseWriter, r *http.Request) {
-
-	var servicios []servicio
-
-	db.Table("servicio").Find(&servicios)
-
-	json.NewEncoder(w).Encode(&servicios)
-
-}
-
-func GetTurnos(w http.ResponseWriter, r *http.Request) {
-
-	var turnos []turnos
-
-	db.Find(&turnos)
-
-	json.NewEncoder(w).Encode(&turnos)
+	defer database.DBConn.Close()
 }
