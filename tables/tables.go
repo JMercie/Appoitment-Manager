@@ -6,8 +6,6 @@ import (
 
 	"github.com/JMercie/appointment-manager/database"
 	"github.com/gofiber/fiber"
-
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type empleado struct {
@@ -68,7 +66,7 @@ func GetEmpleados(c *fiber.Ctx) {
 }
 
 //this method shoudl perform this query SELECT  empleado.nombre as empleado, turnos.fecha, turnos.hora, turnos.cliente_id as cliente FROM turnos INNER JOIN empleado ON empleado.id = turnos.empleado_id INNER JOIN cliente ON cliente.id = turnos.cliente_id;
-func GetTurnoConEmpleadoYCliente(c *fiber.Ctx) {
+func GetTurnoConEmpleado(c *fiber.Ctx) {
 
 	//idEmpleado := c.Params("id")
 	//idCliente := c.Params("idc")
@@ -87,6 +85,7 @@ func GetTurnoConEmpleadoYCliente(c *fiber.Ctx) {
 		log.Print(ar)
 		c.JSON(&turno)
 	}
+
 }
 
 func GetClientes(c *fiber.Ctx) {

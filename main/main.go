@@ -33,7 +33,7 @@ func setupRoutes(app *fiber.App) {
 
 	app.Get("/turnos", tables.GetTurnos)
 
-	app.Get("/turnosyempleado/", tables.GetTurnoConEmpleadoYCliente)
+	app.Get("/turnosyempleado/", tables.GetTurnoConEmpleado)
 }
 
 func main() {
