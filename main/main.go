@@ -36,6 +36,10 @@ func setupRoutes(app *fiber.App) {
 	app.Get("/turnosconempleado/:id", tables.GetTurnosWithEmpleado)
 
 	app.Get("/turnoscliente/:id", tables.GetTurnosWithCliente)
+
+	app.Post("/asistio/:id/:tf", tables.UpdateTurnos)
+
+	app.Post("/createturno/:fecha/:hora/:eid/:cid/:sid", tables.CreateTurnos)
 }
 
 func main() {
