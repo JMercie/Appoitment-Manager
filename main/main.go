@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/fiber/middleware"
@@ -17,7 +18,9 @@ func initDatabase() {
 
 	var err error
 
-	database.DBConn, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=imperiogold sslmode=disable password=postgres")
+	pass := os.Getenv("IMPERIOGOLD")
+
+	database.DBConn, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=imperiogold sslmode=disable password="+pass)
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -47,6 +50,7 @@ func main() {
 
 	initDatabase()
 	app.Use(middleware.Recover())
+
 	setupRoutes(app)
 	app.Listen(3000)
 
