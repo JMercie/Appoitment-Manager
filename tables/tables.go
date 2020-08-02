@@ -100,7 +100,7 @@ func GetTurnos(c *fiber.Ctx) {
 
 	var turnos []turnos
 
-	db.Find(&turnos)
+	db.Find(&turnos).Group("fecha")
 
 	c.JSON(&turnos)
 }
@@ -114,7 +114,7 @@ func GetTurnosWithEmpleado(c *fiber.Ctx) {
 
 	var turnos []turnos
 
-	db.Table("turnos").Select("_id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
+	db.Table("turnos").Select("turnos.id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
 		Joins("JOIN empleado ON empleado.id = turnos.empleado_id").
 		Joins("JOIN cliente ON cliente.id = turnos.cliente_id").
 		Joins("JOIN servicio ON servicio.id = turnos.servicio_id").
@@ -132,7 +132,7 @@ func GetTurnosWithCliente(c *fiber.Ctx) {
 
 	var turnos []turnos
 
-	db.Table("turnos").Select("_id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
+	db.Table("turnos").Select("turnos.id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
 		Joins("JOIN empleado ON empleado.id = turnos.empleado_id").
 		Joins("JOIN cliente ON cliente.id = turnos.cliente_id").
 		Joins("JOIN servicio ON servicio.id = turnos.servicio_id").
@@ -173,8 +173,8 @@ func DeleteTurnos(c *fiber.Ctx) {
 
 func CreateTurnos(c *fiber.Ctx) {
 
-	fecha := c.Params("date")
-	hora := c.Params("time")
+	fecha := c.Params("fecha")
+	hora := c.Params("hora")
 	eid := c.Params("eid") // id del empleado asignado
 	cid := c.Params("cid") // id del cliente que posee el turno
 	sid := c.Params("sid") // id del servicio seleccionado
@@ -195,10 +195,11 @@ func CreateTurnos(c *fiber.Ctx) {
 	if err != nil {
 		log.Print(err)
 	}
-
+	log.Printf("esta es mi fecha %s", fecha)
+	log.Printf("esta es mi hora %s", hora)
 	// este bloque seteo un formato para la hora y fecha del registro
 	layoutFecha := "2006-01-02"
-	layoutHora := "15:04"
+	layoutHora := "15:04:05"
 
 	fechaTotime, err := time.Parse(layoutFecha, fecha)
 	if err != nil {
@@ -236,4 +237,4 @@ func CreateTurnos(c *fiber.Ctx) {
 	log.Printf("record not created? %t", db.NewRecord(turno))
 }
 
-//// aun trabajando en esta funcionalidad, hasta ahora estoy parseando mal las fechas o no las paso bien como parametro y
+
