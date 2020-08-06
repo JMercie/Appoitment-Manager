@@ -28,6 +28,7 @@ func initDatabase() {
 }
 
 func setupRoutes(app *fiber.App) {
+
 	app.Get("/empleado", tables.GetEmpleados)
 
 	app.Get("/cliente", tables.GetClientes)
@@ -40,12 +41,17 @@ func setupRoutes(app *fiber.App) {
 
 	app.Get("/turnoscliente/:id", tables.GetTurnosWithCliente)
 
-	app.Post("/asistio/:id/:tf", tables.UpdateTurnos)
+	app.Get("/ganancias", tables.TotalEarning)
+
+	app.Post("/asistio/:id/:tf", tables.Asistio)
 
 	app.Post("/createturno/:fecha/:hora/:eid/:cid/:sid", tables.CreateTurnos)
+
+	app.Delete("/deleteturno/:id", tables.DeleteTurnos)
 }
 
 func main() {
+	
 	app := fiber.New()
 
 	initDatabase()

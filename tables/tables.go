@@ -100,7 +100,7 @@ func GetTurnos(c *fiber.Ctx) {
 
 	var turnos []turnos
 
-	db.Find(&turnos).Group("fecha")
+	db.Find(&turnos)
 
 	c.JSON(&turnos)
 }
@@ -142,7 +142,7 @@ func GetTurnosWithCliente(c *fiber.Ctx) {
 	c.JSON(turnos)
 }
 
-func UpdateTurnos(c *fiber.Ctx) {
+func Asistio(c *fiber.Ctx) {
 
 	id := c.Params("id")
 	tf := c.Params("tf")
@@ -168,7 +168,7 @@ func DeleteTurnos(c *fiber.Ctx) {
 	if err := db.Delete(&turnos, id).Error; err != nil {
 		log.Fatal("not possible to update")
 	}
-	log.Printf("succesfuly update turno: %s", id)
+	log.Printf("succesfuly delete turno: %s", id)
 }
 
 func CreateTurnos(c *fiber.Ctx) {
@@ -234,7 +234,25 @@ func CreateTurnos(c *fiber.Ctx) {
 	}
 
 	db.Create(&turno)
+
 	log.Printf("record not created? %t", db.NewRecord(turno))
 }
 
+//perform the following query: SELECT SUM(precio) FROM turnos;
+func TotalEarning(c *fiber.Ctx) {
 
+	db := database.DBConn
+	var total []int
+	var turnos []turnos
+
+	if err := db.Find(&turnos).Pluck("precio", &total).Error; err != nil {
+		log.Printf("there was this err %s", err)
+	}
+
+	result := 0
+	for _, v := range total {
+		result += v
+	}
+
+	c.JSON(result)
+}
