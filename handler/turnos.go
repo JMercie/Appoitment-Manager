@@ -1,4 +1,4 @@
-package tables
+package handler
 
 import (
 	"encoding/json"
@@ -7,98 +7,15 @@ import (
 	"time"
 
 	"github.com/JMercie/appointment-manager/database"
+	"github.com/JMercie/appointment-manager/tables"
 	"github.com/gofiber/fiber"
 )
-
-type empleado struct {
-	ID int
-
-	Nombre string
-
-	Turnos []turnos
-}
-
-type servicio struct {
-	ID int
-
-	Nombre string
-
-	Precio int
-
-	Turno turnos
-}
-
-type cliente struct {
-	ID int
-
-	Nombre string
-
-	Telefono int
-
-	Turnos []turnos
-}
-
-type turnos struct {
-	ID int
-
-	Empleado string
-
-	Cliente string
-
-	Fecha *time.Time
-
-	Hora *time.Time
-
-	Precio int
-
-	Asistio bool
-
-	ServicioID uint64
-
-	EmpleadoID uint64
-
-	ClienteID uint64
-}
-
-func GetEmpleados(c *fiber.Ctx) {
-
-	db := database.DBConn
-
-	var empleado []empleado
-
-	db.Table("empleado").Find(&empleado)
-
-	c.JSON(&empleado)
-}
-
-func GetClientes(c *fiber.Ctx) {
-
-	db := database.DBConn
-
-	var clientes []cliente
-
-	db.Table("cliente").Find(&clientes)
-
-	c.JSON(&clientes)
-}
-
-func GetServicios(c *fiber.Ctx) {
-
-	db := database.DBConn
-
-	var servicios []servicio
-
-	db.Table("servicio").Find(&servicios)
-
-	c.JSON(&servicios)
-
-}
 
 func GetTurnos(c *fiber.Ctx) {
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
 	db.Find(&turnos)
 
@@ -112,7 +29,7 @@ func GetTurnosWithEmpleado(c *fiber.Ctx) {
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
 	db.Table("turnos").Select("turnos.id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
 		Joins("JOIN empleado ON empleado.id = turnos.empleado_id").
@@ -130,7 +47,7 @@ func GetTurnosWithCliente(c *fiber.Ctx) {
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
 	db.Table("turnos").Select("turnos.id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
 		Joins("JOIN empleado ON empleado.id = turnos.empleado_id").
@@ -149,7 +66,7 @@ func Asistio(c *fiber.Ctx) {
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
 	if err := db.Model(&turnos).Where("_id = ?", id).Update("asistio", tf).Error; err != nil {
 		log.Fatal("not possible to update")
@@ -163,7 +80,7 @@ func DeleteTurnos(c *fiber.Ctx) {
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
 	if err := db.Delete(&turnos, id).Error; err != nil {
 		log.Fatal("not possible to update")
@@ -179,7 +96,7 @@ func CreateTurnos(c *fiber.Ctx) {
 	cid := c.Params("cid") // id del cliente que posee el turno
 	sid := c.Params("sid") // id del servicio seleccionado
 
-	var servicio servicio
+	var servicio tables.Servicio
 	db := database.DBConn
 
 	//	 este bloque parseo los strings de los id a uint para poder usarlos en la creacion del registro
@@ -224,7 +141,7 @@ func CreateTurnos(c *fiber.Ctx) {
 		log.Println(byteArray)
 	}
 
-	turno := turnos{
+	turno := tables.Turnos{
 		Fecha:      &fechaTotime,
 		Hora:       &horaTotime,
 		EmpleadoID: eID,
@@ -243,7 +160,7 @@ func TotalEarning(c *fiber.Ctx) {
 
 	db := database.DBConn
 	var total []int
-	var turnos []turnos
+	var turnos []tables.Turnos
 
 	if err := db.Find(&turnos).Pluck("precio", &total).Error; err != nil {
 		log.Printf("there was this err %s", err)
