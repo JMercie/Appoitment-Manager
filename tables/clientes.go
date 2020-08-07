@@ -1,5 +1,6 @@
 package tables
 
+// Cliente cliente
 type Cliente struct {
 	ID int
 

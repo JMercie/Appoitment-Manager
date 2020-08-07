@@ -1,4 +1,4 @@
-package auth
+package aspuruth
 
 import (
 	"github.com/JMercie/appointment-manager/config"

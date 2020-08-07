@@ -73,7 +73,7 @@ func Asistio(c *fiber.Ctx) {
 
 	var turnos []tables.Turnos
 
-	if err := db.Model(&turnos).Where("_id = ?", id).Update("asistio", tf).Error; err != nil {
+	if err := db.Model(&turnos).Where("id = ?", id).Update("asistio", tf).Error; err != nil {
 		log.Fatal("not possible to update")
 	}
 	log.Printf("succesfuly update turno: %s", id)

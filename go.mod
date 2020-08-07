@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // direct
+	github.com/gofiber/cors v0.2.2 // direct
 	github.com/gofiber/fiber v1.13.3 // direct
 	github.com/gofiber/jwt v0.2.0 // direct
 	github.com/gofiber/logger v0.2.4

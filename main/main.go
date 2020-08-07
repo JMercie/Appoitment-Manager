@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/gofiber/cors"
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/fiber/middleware"
 
@@ -15,6 +16,7 @@ import (
 func main() {
 
 	app := fiber.New()
+	app.Use(cors.New())
 
 	database.InitDatabase()
 	app.Use(middleware.Recover())

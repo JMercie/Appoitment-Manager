@@ -1,5 +1,6 @@
 package tables
 
+// Servicio servicio
 type Servicio struct {
 	ID int
 

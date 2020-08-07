@@ -2,6 +2,7 @@ package tables
 
 import "time"
 
+// Turnos turnos
 type Turnos struct {
 	ID int
 
