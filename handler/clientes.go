@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber"
 )
 
+// GetClientes query all clients in the db
 func GetClientes(c *fiber.Ctx) {
 
 	db := database.DBConn

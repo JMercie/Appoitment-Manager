@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber"
 )
 
+// GetEmpleados query all employees in the db
 func GetEmpleados(c *fiber.Ctx) {
 
 	db := database.DBConn

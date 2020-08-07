@@ -4,9 +4,11 @@ import (
 	"log"
 	"os"
 
+	"github.com/JMercie/appointment-manager/tables"
 	"github.com/jinzhu/gorm"
 )
 
+// InitDatabase start the db
 func InitDatabase() {
 
 	var err error
@@ -20,6 +22,9 @@ func InitDatabase() {
 		panic("failed to connect database")
 	}
 	log.Println("Connection Opened to Database")
+
+	DBConn.AutoMigrate(&tables.User{})
+	log.Println("Database Migrated")
 }
 
 // "host=localhost port=5432 user=postgres dbname=imperiogold sslmode=disable password="+pass

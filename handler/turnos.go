@@ -11,18 +11,19 @@ import (
 	"github.com/gofiber/fiber"
 )
 
+// GetTurnos query all the appointments in the db
 func GetTurnos(c *fiber.Ctx) {
 
 	db := database.DBConn
 
 	var turnos []tables.Turnos
 
-	db.Find(&turnos)
+	db.Order("precio DESC").Find(&turnos)
 
 	c.JSON(&turnos)
 }
 
-//this method shoudl perform this query SELECT  empleado.nombre as empleado, turnos.fecha, turnos.hora, turnos.cliente_id as cliente FROM turnos INNER JOIN empleado ON empleado.id = turnos.empleado_id INNER JOIN cliente ON cliente.id = turnos.cliente_id;
+// GetTurnosWithEmpleado this method shoudl perform this query SELECT  empleado.nombre as empleado, turnos.fecha, turnos.hora, turnos.cliente_id as cliente FROM turnos INNER JOIN empleado ON empleado.id = turnos.empleado_id INNER JOIN cliente ON cliente.id = turnos.cliente_id;
 func GetTurnosWithEmpleado(c *fiber.Ctx) {
 
 	id := c.Params("id")
@@ -36,11 +37,13 @@ func GetTurnosWithEmpleado(c *fiber.Ctx) {
 		Joins("JOIN cliente ON cliente.id = turnos.cliente_id").
 		Joins("JOIN servicio ON servicio.id = turnos.servicio_id").
 		Where("empleado_id = ?", id).
+		Order("fecha DESC").
 		Scan(&turnos)
 
 	c.JSON(turnos)
 }
 
+// GetTurnosWithCliente brings all appointments for specific client id
 func GetTurnosWithCliente(c *fiber.Ctx) {
 
 	id := c.Params("id")
@@ -54,11 +57,13 @@ func GetTurnosWithCliente(c *fiber.Ctx) {
 		Joins("JOIN cliente ON cliente.id = turnos.cliente_id").
 		Joins("JOIN servicio ON servicio.id = turnos.servicio_id").
 		Where("cliente_id = ?", id).
+		Order("fecha DESC").
 		Scan(&turnos)
 
 	c.JSON(turnos)
 }
 
+// Asistio You update the turn to know if the person was able to go to the shop
 func Asistio(c *fiber.Ctx) {
 
 	id := c.Params("id")
@@ -74,6 +79,7 @@ func Asistio(c *fiber.Ctx) {
 	log.Printf("succesfuly update turno: %s", id)
 }
 
+// DeleteTurnos delete an appointment
 func DeleteTurnos(c *fiber.Ctx) {
 
 	id := c.Params("id")
@@ -88,6 +94,7 @@ func DeleteTurnos(c *fiber.Ctx) {
 	log.Printf("succesfuly delete turno: %s", id)
 }
 
+// CreateTurnos post an appointment
 func CreateTurnos(c *fiber.Ctx) {
 
 	fecha := c.Params("fecha")
@@ -155,14 +162,14 @@ func CreateTurnos(c *fiber.Ctx) {
 	log.Printf("record not created? %t", db.NewRecord(turno))
 }
 
-//perform the following query: SELECT SUM(precio) FROM turnos;
+// TotalEarning perform the following query: SELECT SUM(precio) FROM turnos;
 func TotalEarning(c *fiber.Ctx) {
 
 	db := database.DBConn
 	var total []int
 	var turnos []tables.Turnos
 
-	if err := db.Find(&turnos).Pluck("precio", &total).Error; err != nil {
+	if err := db.Find(&turnos).Where("asistio = ?", "true").Pluck("precio", &total).Error; err != nil {
 		log.Printf("there was this err %s", err)
 	}
 

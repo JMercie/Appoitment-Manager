@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber"
 )
 
+// GetServicios brings a list of all services we provide to clients
 func GetServicios(c *fiber.Ctx) {
 
 	db := database.DBConn
