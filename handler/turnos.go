@@ -1,4 +1,4 @@
-package tables
+package handler
 
 import (
 	"encoding/json"
@@ -7,179 +7,103 @@ import (
 	"time"
 
 	"github.com/JMercie/appointment-manager/database"
+	"github.com/JMercie/appointment-manager/tables"
 	"github.com/gofiber/fiber"
 )
 
-type empleado struct {
-	ID int
-
-	Nombre string
-
-	Turnos []turnos
-}
-
-type servicio struct {
-	ID int
-
-	Nombre string
-
-	Precio int
-
-	Turno turnos
-}
-
-type cliente struct {
-	ID int
-
-	Nombre string
-
-	Telefono int
-
-	Turnos []turnos
-}
-
-type turnos struct {
-	ID int
-
-	Empleado string
-
-	Cliente string
-
-	Fecha *time.Time
-
-	Hora *time.Time
-
-	Precio int
-
-	Asistio bool
-
-	ServicioID uint64
-
-	EmpleadoID uint64
-
-	ClienteID uint64
-}
-
-func GetEmpleados(c *fiber.Ctx) {
-
-	db := database.DBConn
-
-	var empleado []empleado
-
-	db.Table("empleado").Find(&empleado)
-
-	c.JSON(&empleado)
-}
-
-func GetClientes(c *fiber.Ctx) {
-
-	db := database.DBConn
-
-	var clientes []cliente
-
-	db.Table("cliente").Find(&clientes)
-
-	c.JSON(&clientes)
-}
-
-func GetServicios(c *fiber.Ctx) {
-
-	db := database.DBConn
-
-	var servicios []servicio
-
-	db.Table("servicio").Find(&servicios)
-
-	c.JSON(&servicios)
-
-}
-
+// GetTurnos query all the appointments in the db
 func GetTurnos(c *fiber.Ctx) {
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
-	db.Find(&turnos)
+	db.Order("precio DESC").Find(&turnos)
 
 	c.JSON(&turnos)
 }
 
-//this method shoudl perform this query SELECT  empleado.nombre as empleado, turnos.fecha, turnos.hora, turnos.cliente_id as cliente FROM turnos INNER JOIN empleado ON empleado.id = turnos.empleado_id INNER JOIN cliente ON cliente.id = turnos.cliente_id;
+// GetTurnosWithEmpleado this method shoudl perform this query SELECT  empleado.nombre as empleado, turnos.fecha, turnos.hora, turnos.cliente_id as cliente FROM turnos INNER JOIN empleado ON empleado.id = turnos.empleado_id INNER JOIN cliente ON cliente.id = turnos.cliente_id;
 func GetTurnosWithEmpleado(c *fiber.Ctx) {
 
 	id := c.Params("id")
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
-	db.Table("turnos").Select("_id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
+	db.Table("turnos").Select("turnos.id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
 		Joins("JOIN empleado ON empleado.id = turnos.empleado_id").
 		Joins("JOIN cliente ON cliente.id = turnos.cliente_id").
 		Joins("JOIN servicio ON servicio.id = turnos.servicio_id").
 		Where("empleado_id = ?", id).
+		Order("fecha DESC").
 		Scan(&turnos)
 
 	c.JSON(turnos)
 }
 
+// GetTurnosWithCliente brings all appointments for specific client id
 func GetTurnosWithCliente(c *fiber.Ctx) {
 
 	id := c.Params("id")
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
-	db.Table("turnos").Select("_id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
+	db.Table("turnos").Select("turnos.id, empleado.nombre as empleado, turnos.fecha, turnos.hora, cliente.nombre as cliente, servicio.precio as precio").
 		Joins("JOIN empleado ON empleado.id = turnos.empleado_id").
 		Joins("JOIN cliente ON cliente.id = turnos.cliente_id").
 		Joins("JOIN servicio ON servicio.id = turnos.servicio_id").
 		Where("cliente_id = ?", id).
+		Order("fecha DESC").
 		Scan(&turnos)
 
 	c.JSON(turnos)
 }
 
-func UpdateTurnos(c *fiber.Ctx) {
+// Asistio You update the turn to know if the person was able to go to the shop
+func Asistio(c *fiber.Ctx) {
 
 	id := c.Params("id")
 	tf := c.Params("tf")
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
-	if err := db.Model(&turnos).Where("_id = ?", id).Update("asistio", tf).Error; err != nil {
+	if err := db.Model(&turnos).Where("id = ?", id).Update("asistio", tf).Error; err != nil {
 		log.Fatal("not possible to update")
 	}
 	log.Printf("succesfuly update turno: %s", id)
 }
 
+// DeleteTurnos delete an appointment
 func DeleteTurnos(c *fiber.Ctx) {
 
 	id := c.Params("id")
 
 	db := database.DBConn
 
-	var turnos []turnos
+	var turnos []tables.Turnos
 
 	if err := db.Delete(&turnos, id).Error; err != nil {
 		log.Fatal("not possible to update")
 	}
-	log.Printf("succesfuly update turno: %s", id)
+	log.Printf("succesfuly delete turno: %s", id)
 }
 
+// CreateTurnos post an appointment
 func CreateTurnos(c *fiber.Ctx) {
 
-	fecha := c.Params("date")
-	hora := c.Params("time")
+	fecha := c.Params("fecha")
+	hora := c.Params("hora")
 	eid := c.Params("eid") // id del empleado asignado
 	cid := c.Params("cid") // id del cliente que posee el turno
 	sid := c.Params("sid") // id del servicio seleccionado
 
-	var servicio servicio
+	var servicio tables.Servicio
 	db := database.DBConn
 
 	//	 este bloque parseo los strings de los id a uint para poder usarlos en la creacion del registro
@@ -195,10 +119,11 @@ func CreateTurnos(c *fiber.Ctx) {
 	if err != nil {
 		log.Print(err)
 	}
-
+	log.Printf("esta es mi fecha %s", fecha)
+	log.Printf("esta es mi hora %s", hora)
 	// este bloque seteo un formato para la hora y fecha del registro
 	layoutFecha := "2006-01-02"
-	layoutHora := "15:04"
+	layoutHora := "15:04:05"
 
 	fechaTotime, err := time.Parse(layoutFecha, fecha)
 	if err != nil {
@@ -223,7 +148,7 @@ func CreateTurnos(c *fiber.Ctx) {
 		log.Println(byteArray)
 	}
 
-	turno := turnos{
+	turno := tables.Turnos{
 		Fecha:      &fechaTotime,
 		Hora:       &horaTotime,
 		EmpleadoID: eID,
@@ -233,7 +158,25 @@ func CreateTurnos(c *fiber.Ctx) {
 	}
 
 	db.Create(&turno)
+
 	log.Printf("record not created? %t", db.NewRecord(turno))
 }
 
-//// aun trabajando en esta funcionalidad, hasta ahora estoy parseando mal las fechas o no las paso bien como parametro y
+// TotalEarning perform the following query: SELECT SUM(precio) FROM turnos;
+func TotalEarning(c *fiber.Ctx) {
+
+	db := database.DBConn
+	var total []int
+	var turnos []tables.Turnos
+
+	if err := db.Find(&turnos).Where("asistio = ?", "true").Pluck("precio", &total).Error; err != nil {
+		log.Printf("there was this err %s", err)
+	}
+
+	result := 0
+	for _, v := range total {
+		result += v
+	}
+
+	c.JSON(result)
+}

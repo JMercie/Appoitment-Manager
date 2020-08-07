@@ -1,18 +1,17 @@
 <template>
   <div class="hello">
     <div class="calendar">
-    <vc-calendar    mode="range"
-                    :value="null"
-                    color="red"
-                    is-dark
-                    is-inline
-                    :columns="layout.columns"
-                    :rows="layout.rows"
-                    :is-expanded="layout.isExpanded"
-                    
-    />
-  </div>
-
+      <vc-date-picker
+        mode="range"
+        :value="null"
+        color="green"
+        is-dark
+        is-inline
+        :columns="layout.columns"
+        :rows="layout.rows"
+        :is-expanded="layout.isExpanded"
+      />
+    </div>
   </div>
 </template>
 
@@ -20,7 +19,8 @@
 export default {
   computed: {
     layout() {
-      return this.$screens( //this function adjust the layout to be responsive
+      return this.$screens(
+        //this function adjust the layout to be responsive
         {
           // Default layout for mobile
           default: {
@@ -44,11 +44,11 @@ export default {
             rows: 1,
             isExpanded: true,
           },
-        },
+        }
       );
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
