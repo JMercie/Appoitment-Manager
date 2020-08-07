@@ -11,11 +11,16 @@ import (
 
 	"github.com/JMercie/appointment-manager/database"
 	"github.com/JMercie/appointment-manager/routes"
+	"github.com/gofiber/template/html"
 )
 
 func main() {
 
-	app := fiber.New()
+	engine := html.New("/root/go/src/github.com/JMercie/appointment-manager/public", ".html")
+
+	app := fiber.New(&fiber.Settings{
+		Views: engine,
+	})
 	app.Use(cors.New())
 
 	database.InitDatabase()

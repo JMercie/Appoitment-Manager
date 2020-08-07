@@ -18,6 +18,10 @@ func SetupRoutes(app *fiber.App) {
 	authO := api.Group("/auth")
 	authO.Post("/login", handler.Login)
 
+	// Views
+	views := api.Group("/views")
+	views.Get("/", handler.GetViews)
+
 	// User
 	user := api.Group("/user")
 	user.Get("/:id", handler.GetUser)
@@ -26,19 +30,19 @@ func SetupRoutes(app *fiber.App) {
 	user.Delete("/:id", auth.Protected(), handler.DeleteUser)
 
 	// Empleado
-	empleado := app.Group("/empleado")
+	empleado := api.Group("/empleado")
 	empleado.Get("/", handler.GetEmpleados)
 
 	// Cliente
-	cliente := app.Group("/cliente")
+	cliente := api.Group("/cliente")
 	cliente.Get("/", handler.GetClientes)
 
 	// Servicio
-	servicio := app.Group("/servicio")
+	servicio := api.Group("/servicio")
 	servicio.Get("/", handler.GetServicios)
 
 	// Turnos
-	turnos := app.Group("/turnos")
+	turnos := api.Group("/turnos")
 	turnos.Get("/", handler.GetTurnos)
 	turnos.Get("/turnosconempleado/:id", handler.GetTurnosWithEmpleado)
 	turnos.Get("/turnoscliente/:id", handler.GetTurnosWithCliente)

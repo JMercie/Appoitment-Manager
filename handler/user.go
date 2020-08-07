@@ -55,7 +55,7 @@ func GetUser(c *fiber.Ctx) {
 		c.Status(404).JSON(fiber.Map{"status": "error", "message": "No user found with ID", "data": nil})
 		return
 	}
-	c.JSON(fiber.Map{"status": "success", "message": "Product found", "data": user})
+	c.JSON(fiber.Map{"status": "success", "message": "user found", "data": user})
 }
 
 // CreateUser new user
