@@ -8,7 +8,7 @@ require (
 	github.com/gofiber/fiber v1.13.3 // direct
 	github.com/gofiber/jwt v0.2.0 // direct
 	github.com/gofiber/logger v0.2.4
-	github.com/gofiber/template v1.5.5 // indirect
+	github.com/gofiber/template v1.5.5
 	github.com/jinzhu/gorm v1.9.15 // direct
 	github.com/joho/godotenv v1.3.0 // direct
 	github.com/lib/pq v1.8.0 // indirect

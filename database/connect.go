@@ -23,7 +23,7 @@ func InitDatabase() {
 	}
 	log.Println("Connection Opened to Database")
 
-	DBConn.AutoMigrate(&tables.User{})
+	DBConn.AutoMigrate(&tables.User{}, &tables.Cliente{}, &tables.Empleado{}, &tables.Servicio{}, &tables.Turnos{})
 	log.Println("Database Migrated")
 }
 

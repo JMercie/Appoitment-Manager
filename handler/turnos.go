@@ -112,10 +112,12 @@ func CreateTurnos(c *fiber.Ctx) {
 	if err != nil {
 		log.Print(err)
 	}
+
 	cID, err := strconv.ParseUint(cid, 10, 64)
 	if err != nil {
 		log.Print(err)
 	}
+
 	sID, err := strconv.ParseUint(sid, 10, 64)
 	if err != nil {
 		log.Print(err)

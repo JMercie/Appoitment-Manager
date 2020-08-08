@@ -36,6 +36,7 @@ func SetupRoutes(app *fiber.App) {
 	// Cliente
 	cliente := api.Group("/cliente")
 	cliente.Get("/", handler.GetClientes)
+	cliente.Post("/:name/:phone", handler.CreateClientes)
 
 	// Servicio
 	servicio := api.Group("/servicio")

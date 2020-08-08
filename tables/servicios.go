@@ -1,12 +1,14 @@
 package tables
 
+import "github.com/jinzhu/gorm"
+
 // Servicio servicio
 type Servicio struct {
-	ID int
+	gorm.Model
 
 	Nombre string
 
 	Precio int
 
-	Turno Turnos
+	Turno Turnos `gorm:"foreignkey:ServicioID"`
 }

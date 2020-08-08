@@ -16,7 +16,7 @@ import (
 
 func main() {
 
-	engine := html.New("/root/go/src/github.com/JMercie/appointment-manager/public", ".html")
+	engine := html.New("/Users/joseph/go/src/github.com/JMercie/Appoitment-Manager/public", ".html")
 
 	app := fiber.New(&fiber.Settings{
 		Views: engine,

@@ -1,10 +1,14 @@
 package tables
 
-import "time"
+import (
+	"time"
+
+	"github.com/jinzhu/gorm"
+)
 
 // Turnos turnos
 type Turnos struct {
-	ID int
+	gorm.Model
 
 	Empleado string
 
