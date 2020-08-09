@@ -6,17 +6,17 @@ import (
 	"github.com/gofiber/cors"
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/fiber/middleware"
+	"github.com/gofiber/template/handlebars"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 
 	"github.com/JMercie/appointment-manager/database"
 	"github.com/JMercie/appointment-manager/routes"
-	"github.com/gofiber/template/html"
 )
 
 func main() {
 
-	engine := html.New("/Users/joseph/go/src/github.com/JMercie/Appoitment-Manager/public", ".html")
+	engine := handlebars.New("/Users/joseph/go/src/github.com/JMercie/Appoitment-Manager/public", ".hbs")
 
 	app := fiber.New(&fiber.Settings{
 		Views: engine,

@@ -1,0 +1,18 @@
+{
+  "name": "public",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "tailwindcss": "^1.6.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^1.6.2"
+  },
+  "scripts": {
+    "build:css" : "tailwind build /Users/joseph/go/src/github.com/JMercie/Appoitment-Manager/public/src/importStyle.css -o /Users/joseph/go/src/github.com/JMercie/Appoitment-Manager/public/style.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
