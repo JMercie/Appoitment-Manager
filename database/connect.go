@@ -1,9 +1,11 @@
 package database
 
 import (
+	"fmt"
 	"log"
-	"os"
+	"strconv"
 
+	"github.com/JMercie/appointment-manager/config"
 	"github.com/JMercie/appointment-manager/tables"
 	"github.com/jinzhu/gorm"
 )
@@ -13,11 +15,10 @@ func InitDatabase() {
 
 	var err error
 
-	// p := config.Config("DB_PORT")
-	// port, err := strconv.ParseUint(p, 10, 32)
-	pass := os.Getenv("IMPERIOGOLD")
+	p := config.Config("DB_PORT")
+	port, err := strconv.ParseUint(p, 10, 32)
 
-	DBConn, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=imperiogold sslmode=disable password="+pass) //fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Config("DB_HOST"), port, config.Config("DB_USER"), config.Config("IMPERIOGOLD"), config.Config("DB_NAME")))
+	DBConn, err = gorm.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.Config("DB_HOST"), port, config.Config("DB_USER"), config.Config("DB_PASS"), config.Config("DB_NAME")))
 	if err != nil {
 		panic("failed to connect database")
 	}
