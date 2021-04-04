@@ -12,3 +12,17 @@ If you have any suggestion on how to improve it, to help others have a better un
 ## LICENSE
 
 This project is licensed under MIT License, for more info about that, please read the LICENSE.md file. 
+
+## Resources
+
+fiber docs:  https://gofiber.io/
+GORM docs: https://gorm.io/docs/index.html
+Go official docs:  https://golang.org/doc/
+
+## TODO
+
+I would like to add the following to the project by time. (of course any help would be greatly appreciated)
+
+- unit tests
+- benchmark tests
+- push the project to Heroku
