@@ -15,9 +15,9 @@ This project is licensed under MIT License, for more info about that, please rea
 
 ## Resources
 
-fiber docs:  https://gofiber.io/
-GORM docs: https://gorm.io/docs/index.html
-Go official docs:  https://golang.org/doc/
+- fiber docs:  https://gofiber.io/
+- GORM docs: https://gorm.io/docs/index.html
+- Go official docs:  https://golang.org/doc/
 
 ## TODO
 
