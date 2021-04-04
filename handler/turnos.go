@@ -92,6 +92,7 @@ func DeleteTurnos(c *fiber.Ctx) {
 		log.Fatal("not possible to update")
 	}
 	log.Printf("succesfuly delete turno: %s", id)
+	c.JSON(fiber.Map{"status": "success", "message": "succesfuly delete turno", "data": turnos})
 }
 
 // CreateTurnos post an appointment
@@ -111,10 +112,12 @@ func CreateTurnos(c *fiber.Ctx) {
 	if err != nil {
 		log.Print(err)
 	}
+
 	cID, err := strconv.ParseUint(cid, 10, 64)
 	if err != nil {
 		log.Print(err)
 	}
+
 	sID, err := strconv.ParseUint(sid, 10, 64)
 	if err != nil {
 		log.Print(err)
@@ -160,6 +163,7 @@ func CreateTurnos(c *fiber.Ctx) {
 	db.Create(&turno)
 
 	log.Printf("record not created? %t", db.NewRecord(turno))
+	c.JSON(fiber.Map{"status": "success", "message": "turno created", "data": turno})
 }
 
 // TotalEarning perform the following query: SELECT SUM(precio) FROM turnos;

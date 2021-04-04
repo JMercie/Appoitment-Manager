@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/cors"
 	"github.com/gofiber/fiber"
 	"github.com/gofiber/fiber/middleware"
+	"github.com/gofiber/template/handlebars"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 
@@ -15,7 +16,11 @@ import (
 
 func main() {
 
-	app := fiber.New()
+	engine := handlebars.New("/Users/joseph/go/src/github.com/JMercie/Appoitment-Manager/public", ".hbs")
+
+	app := fiber.New(&fiber.Settings{
+		Views: engine,
+	})
 	app.Use(cors.New())
 
 	database.InitDatabase()
